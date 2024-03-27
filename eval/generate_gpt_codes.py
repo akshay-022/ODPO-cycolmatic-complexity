@@ -14,6 +14,7 @@ import sys
 import time
 import transformers
 import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from reindent import run as run_reindent
 
@@ -135,11 +136,11 @@ def main(args):
         problems = problems[start:end]
 
     # Tokenizer
-    tokenizer = transformers.GPT2Tokenizer.from_pretrained(args.arch)
+    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-1.3b-instruct", trust_remote_code=True)
 
     # Set up model
     print("Loading model...")
-    model = transformers.GPT2LMHeadModel.from_pretrained(args.load)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-1.3b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
     model.cuda()
     print(f"Loaded {args.load}.")
 
@@ -163,36 +164,38 @@ def main(args):
         if args.debug:
             print("PROMPT_TEXT:")
             print(prompt_text)
-        
-        # Feed this into the model.
         start = time.time()
-        try:
-            with torch.no_grad():
-                input_ids = torch.LongTensor(tokenizer.encode(prompt_text, verbose=False)).unsqueeze(0).cuda()
-                output_ids = model.generate(
-                    input_ids,
-                    num_beams=args.num_beams,
-                    early_stopping=True,
-                    max_length=1024 - len(input_ids)
-                )
-                output_str = tokenizer.decode(output_ids[0])
-        except Exception as e:
-            if isinstance(e, UnboundLocalError) and str(e) == "local variable 'next_tokens' referenced before assignment":
-                # See https://github.com/huggingface/transformers/issues/5118
-                if args.debug:
-                    print("Problem text was > 1024 tokens, so cannot do generation")
+        output_str = ["",""]
+        for sample_number in range(2):
+            # Feed this into the model.
+            try:
+                with torch.no_grad():
+                    input_ids = torch.LongTensor(tokenizer.encode(prompt_text, verbose=False)).unsqueeze(0).cuda()
+                    output_ids = model.generate(
+                        input_ids,
+                        num_beams=args.num_beams,
+                        early_stopping=True,
+                        max_length=1024 - len(input_ids)
+                    )
+                    output_str[sample_number] = tokenizer.decode(output_ids[0])
+            except Exception as e:
+                if isinstance(e, UnboundLocalError) and str(e) == "local variable 'next_tokens' referenced before assignment":
+                    # See https://github.com/huggingface/transformers/issues/5118
+                    if args.debug:
+                        print("Problem text was > 1024 tokens, so cannot do generation")
+                        print(e)
+                else:
+                    print("Unexpected exception in generating solution")
                     print(e)
-            else:
-                print("Unexpected exception in generating solution")
-                print(e)
-            # Default to empty string on errors
-            output_str = ""
-        end = time.time()
+                # Default to empty string on errors
+                output_str[sample_number] = ""
+                
 
-        if args.peeking == 1.0:
-            output_str = sample_sol
-        elif len(output_str):
-            output_str = output_str.split("ANSWER:\n")[1].replace("<|endoftext|>", "")
+                if args.peeking == 1.0:
+                    output_str[sample_number] = sample_sol
+                elif len(output_str[sample_number]):
+                    output_str[sample_number] = output_str[sample_number].split("ANSWER:\n")[1].replace("<|endoftext|>", "")
+        end = time.time()
 
         # Save the generated sol
         gpt_codes[index+args.start] = output_str
@@ -209,10 +212,10 @@ def main(args):
 
 if __name__ == "__main__":
     import argparse
-
+    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     parser = argparse.ArgumentParser(description="Run a tranined model to generate Python code.")
     parser.add_argument("--arch", default="gpt2", choices=transformers.GPT2_PRETRAINED_MODEL_ARCHIVE_LIST)
-    parser.add_argument("-t","--test_loc", default="~/apps/data_split/test.json", type=str)
+    parser.add_argument("-t","--test_loc", default=os.path.join(parent_dir, 'train', 'test.json'), type=str)
     parser.add_argument("-r","--root", default="../", type=str, help="where the data is stored.")
     parser.add_argument("-l","--load", default="~/apps/models/checkpoints/final", type=str)
     parser.add_argument("--peeking", default=0.0, type=float)
