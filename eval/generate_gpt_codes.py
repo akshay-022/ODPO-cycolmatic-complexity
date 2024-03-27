@@ -141,12 +141,13 @@ def main(args):
     # Set up model
     print("Loading model...")
     model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-1.3b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
-    model.cuda()
+    #model.cuda()
     print(f"Loaded {args.load}.")
 
     # main eval loop
     for index, problem in enumerate(tqdm(problems)):
         prob_path = os.path.join(args.root, problem)
+        print(prob_path)
         if args.debug:
             print(f"problem path = {prob_path}")
 
@@ -157,6 +158,8 @@ def main(args):
         if not os.path.exists(starter_path):
                 starter_path = None
         if not os.path.exists(test_case_path) or not os.path.exists(prompt_path):
+            print(os.path.exists(test_case_path))
+            print(os.path.exists(prompt_path))
             continue
 
         # Read the question in
@@ -170,7 +173,7 @@ def main(args):
             # Feed this into the model.
             try:
                 with torch.no_grad():
-                    input_ids = torch.LongTensor(tokenizer.encode(prompt_text, verbose=False)).unsqueeze(0).cuda()
+                    input_ids = torch.LongTensor(tokenizer.encode(prompt_text, verbose=False)).unsqueeze(0)#.cuda()
                     output_ids = model.generate(
                         input_ids,
                         num_beams=args.num_beams,
@@ -223,7 +226,7 @@ if __name__ == "__main__":
     parser.add_argument("-s","--start", default=0, type=int)
     parser.add_argument("-e","--end", default=None, type=int)
     parser.add_argument("-i", "--index", default=None, type=int)
-    parser.add_argument("-d", "--debug", action="store_true")
+    parser.add_argument("-d", "--debug", action="store_true", default=True)
     parser.add_argument("--save", type=str, default="./results")
  
     args = parser.parse_args()
