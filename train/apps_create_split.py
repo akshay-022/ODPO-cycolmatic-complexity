@@ -17,7 +17,7 @@ def create_split(split="train", name="train"):
 
 # insert path to train and test
 # path should be relative to root directory or absolute paths
-paths_to_probs = ["APPS/train", "APPS/test"]
+paths_to_probs = ["../data/APPS/train", "../data/APPS/test"]
 names = ["train", "test"]
 
 all_paths = []
