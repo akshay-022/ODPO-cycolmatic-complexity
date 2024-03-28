@@ -141,7 +141,7 @@ def main(args):
     # Set up model
     print("Loading model...")
     model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-1.3b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
-    #model.cuda()
+    model.cuda()
     print(f"Loaded {args.load}.")
 
     # main eval loop
