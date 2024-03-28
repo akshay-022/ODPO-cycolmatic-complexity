@@ -169,18 +169,15 @@ def main(args):
             print(prompt_text)
         start = time.time()
         output_str = ["",""]
+        messages=[{ 'role': 'user', 'content': prompt_text}]
+        print(prompt_text)
         for sample_number in range(2):
             # Feed this into the model.
             try:
-                with torch.no_grad():
-                    input_ids = torch.LongTensor(tokenizer.encode(prompt_text, verbose=False)).unsqueeze(0)#.cuda()
-                    output_ids = model.generate(
-                        input_ids,
-                        num_beams=args.num_beams,
-                        early_stopping=True,
-                        max_length=1024 - len(input_ids)
-                    )
-                    output_str[sample_number] = tokenizer.decode(output_ids[0])
+                inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
+                outputs = model.generate(inputs, max_new_tokens=512, do_sample=True, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+                output_str[sample_number] = tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True)
+                print(output_str[sample_number])
             except Exception as e:
                 if isinstance(e, UnboundLocalError) and str(e) == "local variable 'next_tokens' referenced before assignment":
                     # See https://github.com/huggingface/transformers/issues/5118
@@ -198,6 +195,7 @@ def main(args):
                     output_str[sample_number] = sample_sol
                 elif len(output_str[sample_number]):
                     output_str[sample_number] = output_str[sample_number].split("ANSWER:\n")[1].replace("<|endoftext|>", "")
+
         end = time.time()
 
         # Save the generated sol
@@ -226,7 +224,7 @@ if __name__ == "__main__":
     parser.add_argument("-s","--start", default=0, type=int)
     parser.add_argument("-e","--end", default=None, type=int)
     parser.add_argument("-i", "--index", default=None, type=int)
-    parser.add_argument("-d", "--debug", action="store_true", default=True)
+    parser.add_argument("-d", "--debug", action="store_true", default=False)
     parser.add_argument("--save", type=str, default="./results")
  
     args = parser.parse_args()
