@@ -207,8 +207,8 @@ def main(args):
             print(output_str)
             print("------------------------------------------------------------")
 
-    with open(codes_loc, "w") as f:
-        json.dump(gpt_codes, f)
+        with open(codes_loc, "w") as f:
+            json.dump(gpt_codes, f)
 
 
 if __name__ == "__main__":
