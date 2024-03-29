@@ -4,7 +4,8 @@ import pathlib
 
 def create_split(split="train", name="train"):
     paths = []
-    roots = sorted(os.listdir(split))
+    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    roots = sorted(os.listdir(os.path.join(parent_dir,split)))
     for folder in roots:
         root_path = os.path.join(split, folder)
         paths.append(root_path)

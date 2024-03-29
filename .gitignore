@@ -2,5 +2,5 @@
 APPS.tar.gz
 apps_dataset/*
 data/
+__pycache__/
 .DS_Store
-
