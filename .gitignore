@@ -2,4 +2,5 @@
 APPS.tar.gz
 apps_dataset/*
 data/
+.DS_Store
 

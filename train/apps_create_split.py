@@ -17,7 +17,7 @@ def create_split(split="train", name="train"):
 
 # insert path to train and test
 # path should be relative to root directory or absolute paths
-paths_to_probs = ["../data/APPS/train", "../data/APPS/test"]
+paths_to_probs = ["/home/shared/APPS/train", "/home/shared/APPS/test"] # Based on the GCP VM instance settings we have
 names = ["train", "test"]
 
 all_paths = []
