@@ -25,14 +25,14 @@ import radon
 from radon.complexity import cc_visit
 from radon.cli.harvest import CCHarvester
 
-md = MosesDetokenizer(lang='en')
+#md = MosesDetokenizer(lang='en')
 
 random.seed(12345678987654321)
 
 def calc_complexity(output):
     def extract_substring(text):
         # Define the regular expression pattern to match the substring inside triple quotes
-        pattern = r'"""python\n(.*?)"""'
+        pattern = r'```python\n(.*?)```'
 
         # Use re.search() to find the first occurrence of the pattern
         match = re.search(pattern, text, re.DOTALL)
@@ -48,7 +48,7 @@ def calc_complexity(output):
 
     # Calculate cyclomatic complexity
     complexity_results = cc_visit(code_string)
-    print(complexity_results)
+    #print(complexity_results)
     total_complexity = sum([result.complexity for result in complexity_results])
 
     return total_complexity
@@ -84,6 +84,7 @@ def eval_and_save_complexity_scores(args):
 
     # main eval loop
     for index, problem in enumerate(tqdm(problems)):
+
         prob_path = os.path.join(args.root, problem)
         if args.debug:
             print(f"problem path = {problem}")
@@ -101,7 +102,7 @@ def eval_and_save_complexity_scores(args):
         if isinstance(output_strs, list):
             gpt_complexity[index+args.start] = []
             for output_str in output_strs:
-                gpt_complexity[index+args.start].extend(calc_complexity(output_str))
+                gpt_complexity[index+args.start].extend([calc_complexity(output_str)])
         # one output per problem
         else:
             output_str = output_strs
@@ -119,6 +120,8 @@ def eval_and_save_complexity_scores(args):
 
         with open(complexity_loc, "w") as f:
             json.dump(gpt_complexity, f)
+
+
 
     return gpt_complexity
 
