@@ -1,10 +1,16 @@
 import json
 
-file_path = '/Users/akshayiyer/Desktop/MS CS Columbia/Sem 2 - Spring 2024/CodeGen/ODPO-cyclomatic-complexity/eval/all_codes.json'
+# Read the contents of all_codes_1.json
+with open('all_codes_1.json', 'r') as file1:
+    data1 = json.load(file1)
 
-with open(file_path, 'r') as file:
-    data = json.load(file)
+# Read the contents of all_codes_2.json
+with open('all_codes_2.json', 'r') as file2:
+    data2 = json.load(file2)
 
-print(len(data))
+# Combine the data from both files
+combined_data = {**data1, **data2}
 
-# Now you can use the 'data' variable to access the contents of the JSON file
+# Write the combined data to all_codes.json
+with open('all_codes.json', 'w') as outfile:
+    json.dump(combined_data, outfile)
