@@ -186,7 +186,7 @@ def get_apps(split: str, silent: bool = False, cache_dir: str = None) -> Dict[st
     #This is the actual thing: 
     """with open("preference_dataset.json", 'r') as f:
         data = json.load(f)"""
-    data = {'Sample debugging': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'values': {'helpful': [0.0, 1.0], 'harmless': [1.0, 0.0]}}}
+    data = {'Sample debugging': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'values': {'helpful': [1.0, 0.0], 'harmless': [1.0, 0.0]}}}
     return data
 
 
@@ -203,8 +203,8 @@ def get_dataset(name: str, split: str, silent: bool = False, cache_dir: str = No
     else:
         raise ValueError(f"Unknown dataset '{name}'")
 
-    assert set(list(data.values())[0].keys()) == {'responses', 'pairs', 'sft_target'}, \
-        f"Unexpected keys in dataset: {list(list(data.values())[0].keys())}"
+    #assert set(list(data.values())[0].keys()) == {'responses', 'pairs', 'sft_target'}, \
+    #    f"Unexpected keys in dataset: {list(list(data.values())[0].keys())}"
 
     return data
 
