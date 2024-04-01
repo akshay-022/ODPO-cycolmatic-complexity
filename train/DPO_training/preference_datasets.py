@@ -250,7 +250,7 @@ def get_collate_fn(tokenizer) -> Callable[[List[Dict]], Dict[str, Union[List, to
                     padded_batch[k] = padded_batch[k].flip(dims=[1])
             else:
                 padded_batch[k] = [ex[k] for ex in batch]
-
+        padded_batch['value_offset'] = torch.tensor(padded_batch['value_offset']).to(torch.device("cuda"))
         return padded_batch
     return collate_fn
 

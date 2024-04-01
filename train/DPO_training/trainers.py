@@ -75,8 +75,6 @@ def preference_loss(policy_chosen_logps: torch.FloatTensor,
         ref_logratios = 0
 
     logits = pi_logratios - ref_logratios  # also known as h_{\pi_\theta}^{y_w,y_l}
-    
-    offset = torch.tensor(offset).to(torch.device("cuda"))
 
     logits = logits - torch.log(offset)/beta
     #logits = pi_logratios - ref_logratios - (offset/beta)
