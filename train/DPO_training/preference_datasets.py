@@ -9,6 +9,7 @@ import random
 from bs4 import BeautifulSoup, NavigableString
 import numpy as np
 from typing import Dict, List, Optional, Iterator, Callable, Union, Tuple
+import json
 
 
 def extract_anthropic_prompt(prompt_and_response):
@@ -159,6 +160,35 @@ def get_hh(split: str, silent: bool = False, cache_dir: str = None) -> Dict[str,
 
     return data
 
+def get_apps(split: str, silent: bool = False, cache_dir: str = None) -> Dict[str, Dict[str, Union[List[Tuple[int, int]], List[str], str]]]:
+    """Converting our created APPS preference data to the necessary format.
+    
+       The dataset is converted to a dictionary with the following structure:
+       {
+           'prompt1': {
+               'responses': List[str],
+               'pairs': List[Tuple[int, int]],
+               'sft_target': str,
+               'values': dict{list[float,float]}
+           },
+           'prompt2': {
+               ...
+           },
+       }
+
+       Prompts should be structured as follows:
+         \n\nHuman: <prompt>\n\nAssistant:
+       Multiple turns are allowed, but the prompt should always start with \n\nHuman: and end with \n\nAssistant:.
+       
+       For this dataset, the sft_target is just the chosen response.
+    """
+    print(f'Loading APPS dataset...')
+    #This is the actual thing: 
+    """with open("preference_dataset.json", 'r') as f:
+        data = json.load(f)"""
+    data = {'Sample debugging': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'values': {'helpful': [0.0, 1.0], 'harmless': [1.0, 0.0]}}}
+    return data
+
 
 def get_dataset(name: str, split: str, silent: bool = False, cache_dir: str = None):
     """Load the given dataset by name. Supported by default are 'shp', 'hh', and 'se'."""
@@ -168,6 +198,8 @@ def get_dataset(name: str, split: str, silent: bool = False, cache_dir: str = No
         data = get_hh(split, silent=silent, cache_dir=cache_dir)
     elif name == 'se':
         data = get_se(split, silent=silent, cache_dir=cache_dir)
+    elif name == 'apps':
+        data = get_apps(split, silent=silent, cache_dir=cache_dir)
     else:
         raise ValueError(f"Unknown dataset '{name}'")
 
