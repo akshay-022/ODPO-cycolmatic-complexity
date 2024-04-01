@@ -176,6 +176,16 @@ def get_apps(split: str, silent: bool = False, cache_dir: str = None) -> Dict[st
            },
        }
 
+        {
+           'prompt1': {
+               'responses': List[str],
+                'unit_test_accuracy' : List[float]
+           },
+           'prompt2': {
+               ...
+           },
+       }
+
        Prompts should be structured as follows:
          \n\nHuman: <prompt>\n\nAssistant:
        Multiple turns are allowed, but the prompt should always start with \n\nHuman: and end with \n\nAssistant:.
