@@ -375,6 +375,10 @@ def get_batch_iterator(names: List[str],
             if not silent:
                 print(f'Finished generating {n_epochs} epochs on {split} split')
             break
+        if n_examples is not None and example_idx >= n_examples:
+            if not silent:
+                print(f'Finished generating {n_examples} examples on {split} split')
+            break
         if shuffle:
             with TemporarilySeededRandom(next(permutation_seeds)):
                 random.shuffle(flat_data)
