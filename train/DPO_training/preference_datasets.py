@@ -196,7 +196,7 @@ def get_apps(split: str, silent: bool = False, cache_dir: str = None) -> Dict[st
     #This is the actual thing: 
     """with open("preference_dataset.json", 'r') as f:
         data = json.load(f)"""
-    data = {'Sample debugging': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 1.0}}
+    data = {'Sample debugging': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 1.0},'Sample debugging1': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 2.0},'Sample debugging2': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 3.0}, 'Sample debugging3': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 4.0}}
     return data
 
 
@@ -375,7 +375,7 @@ def get_batch_iterator(names: List[str],
             if not silent:
                 print(f'Finished generating {n_epochs} epochs on {split} split')
             break
-        if n_examples is not None and example_idx >= n_examples:
+        elif n_examples is not None and example_idx >= n_examples:
             if not silent:
                 print(f'Finished generating {n_examples} examples on {split} split')
             break
