@@ -4,6 +4,7 @@ import torch.nn as nn
 import transformers
 from utils import get_local_dir, get_local_run_dir, disable_dropout, init_distributed, get_open_port
 import os
+#os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
 import hydra
 import torch.multiprocessing as mp
 from omegaconf import OmegaConf, DictConfig
@@ -22,7 +23,7 @@ def worker_main(rank: int, world_size: int, config: DictConfig, policy: nn.Modul
     """Main function for each worker process (may be only 1 for BasicTrainer/TensorParallelTrainer)."""
     if 'FSDP' in config.trainer:
         init_distributed(rank, world_size, port=config.fsdp_port)
-    
+     
     if config.debug:
         wandb.init = lambda *args, **kwargs: None
         wandb.log = lambda *args, **kwargs: None

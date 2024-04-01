@@ -356,6 +356,7 @@ class BasicTrainer(object):
             #### END EVALUATION ####
 
             #### BEGIN TRAINING ####
+            torch.cuda.empty_cache()
             self.policy.train()
 
             start_time = time.time()
