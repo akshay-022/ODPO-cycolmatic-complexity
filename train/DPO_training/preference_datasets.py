@@ -169,7 +169,7 @@ def get_apps(split: str, silent: bool = False, cache_dir: str = None) -> Dict[st
                'responses': List[str],
                'pairs': List[Tuple[int, int]],
                'sft_target': str,
-               'values': dict{list[float,float]}
+               'value': float
            },
            'prompt2': {
                ...
@@ -186,8 +186,10 @@ def get_apps(split: str, silent: bool = False, cache_dir: str = None) -> Dict[st
     #This is the actual thing: 
     """with open("preference_dataset.json", 'r') as f:
         data = json.load(f)"""
-    data = {'Sample debugging': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'values': {'helpful': [1.0, 0.0], 'harmless': [1.0, 0.0]}}}
+    data = {'Sample debugging': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 1.0}}
     return data
+
+
 
 
 def get_dataset(name: str, split: str, silent: bool = False, cache_dir: str = None):
@@ -350,7 +352,7 @@ def get_batch_iterator(names: List[str],
         for name in names:
             truncation_mode = 'keep_end' if name == 'hh' else 'keep_start'
             for prompt, data in get_dataset(name, split, silent=silent, cache_dir=cache_dir).items():
-                flat_data.append((prompt, data['responses'], data['pairs'], data['sft_target'], truncation_mode))
+                flat_data.append((prompt, data['responses'], data['pairs'], data['sft_target'], data['value'], truncation_mode))
 
     collate_fn = get_collate_fn(tokenizer)
 
@@ -367,7 +369,7 @@ def get_batch_iterator(names: List[str],
                 random.shuffle(flat_data)
 
         batch = []
-        for prompt, responses, pairs, sft_target, truncation_mode in flat_data:
+        for prompt, responses, pairs, sft_target, value_offset, truncation_mode in flat_data:
             if done:
                 break
             if sft_mode:
@@ -387,7 +389,7 @@ def get_batch_iterator(names: List[str],
                 for p in pairs:
                     if done:
                         break
-                    batch_element = tokenize_batch_element(prompt, responses[p[0]], responses[p[1]], truncation_mode, tokenizer, max_length, max_prompt_length)
+                    batch_element = tokenize_batch_element(prompt, responses[p[0]], responses[p[1]], value_offset, truncation_mode, tokenizer, max_length, max_prompt_length)
                     batch.append(batch_element)
                     example_idx += 1
                     if len(batch) == batch_size:

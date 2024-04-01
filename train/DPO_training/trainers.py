@@ -50,6 +50,7 @@ def preference_loss(policy_chosen_logps: torch.FloatTensor,
                     label_smoothing: float = 0.0,
                     ipo: bool = False,
                     reference_free: bool = False) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
+                    #offset: float = 0.0) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
     """Compute the DPO loss for a batch of policy and reference model log probabilities.
 
     Args:
@@ -74,6 +75,7 @@ def preference_loss(policy_chosen_logps: torch.FloatTensor,
         ref_logratios = 0
 
     logits = pi_logratios - ref_logratios  # also known as h_{\pi_\theta}^{y_w,y_l}
+    #logits = pi_logratios - ref_logratios - (offset/beta)
 
     if ipo:
         losses = (logits - 1/(2 * beta)) ** 2  # Eq. 17 of https://arxiv.org/pdf/2310.12036v2.pdf
