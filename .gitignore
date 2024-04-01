@@ -4,3 +4,6 @@ apps_dataset/*
 data/
 __pycache__/
 .DS_Store
+outputs/*
+DPO_training/__pycache__/*
+.cache

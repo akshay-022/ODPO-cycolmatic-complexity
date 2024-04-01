@@ -47,10 +47,10 @@ def preference_loss(policy_chosen_logps: torch.FloatTensor,
                     reference_chosen_logps: torch.FloatTensor,
                     reference_rejected_logps: torch.FloatTensor,
                     beta: float,
+                    offset: torch.FloatTensor,
                     label_smoothing: float = 0.0,
                     ipo: bool = False,
                     reference_free: bool = False) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
-                    #offset: float = 0.0) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
     """Compute the DPO loss for a batch of policy and reference model log probabilities.
 
     Args:
@@ -241,7 +241,7 @@ class BasicTrainer(object):
                 raise ValueError(f'unknown loss {loss_config.name}')
 
             losses, chosen_rewards, rejected_rewards = preference_loss(
-                policy_chosen_logps, policy_rejected_logps, reference_chosen_logps, reference_rejected_logps, **loss_kwargs)
+                policy_chosen_logps, policy_rejected_logps, reference_chosen_logps, reference_rejected_logps, offset = batch['value_offset'], **loss_kwargs)
 
             reward_accuracies = (chosen_rewards > rejected_rewards).float()
 

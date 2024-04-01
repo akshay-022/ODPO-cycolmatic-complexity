@@ -255,7 +255,7 @@ def get_collate_fn(tokenizer) -> Callable[[List[Dict]], Dict[str, Union[List, to
     return collate_fn
 
 
-def tokenize_batch_element(prompt: str, chosen: str, rejected: str, truncation_mode: str, tokenizer, max_length: int, max_prompt_length: int) -> Dict:
+def tokenize_batch_element(prompt: str, chosen: str, rejected: str, value_offset: float, truncation_mode: str, tokenizer, max_length: int, max_prompt_length: int) -> Dict:
     """Tokenize a single batch element.
     
        At this stage, we don't convert to PyTorch tensors yet; we just handle the truncation
@@ -311,6 +311,7 @@ def tokenize_batch_element(prompt: str, chosen: str, rejected: str, truncation_m
     batch['rejected'] = prompt + rejected
     batch['chosen_response_only'] = chosen
     batch['rejected_response_only'] = rejected
+    batch['value_offset'] = value_offset
 
     for k, toks in {'chosen': chosen_sequence_tokens, 'rejected': rejected_sequence_tokens, 'prompt': prompt_tokens}.items():
         for type_key, tokens in toks.items():
@@ -383,7 +384,7 @@ def get_batch_iterator(names: List[str],
             if done:
                 break
             if sft_mode:
-                batch_element = tokenize_batch_element(prompt, sft_target, sft_target, truncation_mode, tokenizer, max_length, max_prompt_length)
+                batch_element = tokenize_batch_element(prompt, sft_target, sft_target, value_offset, truncation_mode, tokenizer, max_length, max_prompt_length)
                 batch_element = {k: v for k, v in batch_element.items() if 'rejected' not in k}
                 batch.append(batch_element)
                 example_idx += 1
