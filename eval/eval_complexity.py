@@ -42,14 +42,23 @@ def calc_complexity(output):
             return match.group(1)
         else:
             return None
+    #print(output)
     # isolate code string inside triple quotation marks from output
     code_string = extract_substring(output)
 
+    try:
+        # Calculate cyclomatic complexity
+        complexity_results = cc_visit(code_string)
+        #print(complexity_results)
+        total_complexity = sum([result.complexity for result in complexity_results])
+        #if total_complexity == 0:
+        #    print(code_string)
+    except:
+        print("Error in Python Script")
+        total_complexity = None
+        #if total_complexity == None:
 
-    # Calculate cyclomatic complexity
-    complexity_results = cc_visit(code_string)
-    #print(complexity_results)
-    total_complexity = sum([result.complexity for result in complexity_results])
+        #    print(output)
 
     return total_complexity
 
@@ -61,7 +70,8 @@ def eval_and_save_complexity_scores(args):
 
     gpt_codes = {}
     gpt_complexity = {}
-    codes_loc = os.path.join(args.save, f"all_codes.json")
+    #codes_loc = os.path.join(args.save, f"all_codes.json")
+    codes_loc = "all_codes.json"
     if not os.path.exists(codes_loc):
         codes_loc = os.path.join(args.save, f"{args.start}-{args.end}_codes.json")
  
@@ -121,16 +131,27 @@ def eval_and_save_complexity_scores(args):
         with open(complexity_loc, "w") as f:
             json.dump(gpt_complexity, f)
 
-
-
+    #print(gpt_complexity)
     return gpt_complexity
 
 def print_results(results):
-    complexity_scores = []
 
-    for res in results:
-        complexity_scores.append(results[res])
-    print(f"Average Complexity Score = {np.mean(complexity_scores)}")
+
+    complexity_scores = []
+    zero_scores = []
+    non_zero_scores = []
+    for problem in results:
+        for soln_complexity in results[problem]:
+            if soln_complexity != None:
+                complexity_scores.append(soln_complexity)
+                if soln_complexity > 0:
+                    non_zero_scores.append(soln_complexity)
+                if soln_complexity == 0:
+                    zero_scores.append(soln_complexity)
+    print(f"Number of Complete Samples = {len(complexity_scores)}")
+    print(f"Number of Samples with 0 Complexity = {len(zero_scores)}")
+    print(f"Number of Samples with >0 Complexity = {len(non_zero_scores)}")
+    print(f"Average Complexity Score = {np.mean(non_zero_scores)}")
 
 
 
