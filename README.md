@@ -1,5 +1,5 @@
 # CyCoder
-This is the repository for **CyCoder -- Optimizing Code Generation via Reinforcement Learning** 
+This is the repository for **CyCoder -- Optimizing Code Generation via Direct Preference Optimization with Offset** 
 
 
 This repository contains both training and evaluation code referenced from [here](#References).
