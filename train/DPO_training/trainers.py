@@ -76,7 +76,7 @@ def preference_loss(policy_chosen_logps: torch.FloatTensor,
 
     logits = pi_logratios - ref_logratios  # also known as h_{\pi_\theta}^{y_w,y_l}
 
-    logits = logits - offset/beta
+    logits = logits - torch.log(offset)/beta
 
     if ipo:
         losses = (logits - 1/(2 * beta)) ** 2  # Eq. 17 of https://arxiv.org/pdf/2310.12036v2.pdf
