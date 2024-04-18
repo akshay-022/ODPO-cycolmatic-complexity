@@ -173,7 +173,7 @@ class BasicTrainer(object):
             sft_mode=config.loss.name == 'sft',
         )
 
-        self.policy = policy
+        self.policy = policy.half()
         self.reference_model = reference_model
 
         self.train_iterator = get_batch_iterator(**data_iterator_kwargs, split='train', n_epochs=config.n_epochs, n_examples=config.n_examples, batch_size=config.batch_size, silent=rank != 0, cache_dir=get_local_dir(config.local_dirs))
@@ -371,7 +371,21 @@ class BasicTrainer(object):
                     batch_metrics[k].extend(v)
 
             grad_norm = self.clip_gradient()
+            
+            #Memory profiling
+            """memory_usage_bytes = torch.cuda.memory_allocated()
+            # Convert the memory usage to gigabytes (GB)
+            memory_usage_gb = memory_usage_bytes / (1024 ** 3)  # 1024^3 bytes = 1 GB
+            print("Memory usage of the model's parameters:", memory_usage_gb, "GB")"""
+            
+
             self.optimizer.step()
+            #Memory profiling
+            """memory_usage_bytes = torch.cuda.memory_allocated()
+            # Convert the memory usage to gigabytes (GB)
+            memory_usage_gb = memory_usage_bytes / (1024 ** 3)  # 1024^3 bytes = 1 GB
+            print("Memory usage of the model's parameters:", memory_usage_gb, "GB")"""
+
             self.scheduler.step()
             self.optimizer.zero_grad()
 

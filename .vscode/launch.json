@@ -15,7 +15,7 @@
                 "loss.beta=0.1",
                 "exp_name=test_dpo_deepseek",
                 "gradient_accumulation_steps=2",
-                "batch_size=2",
+                "batch_size=4",
                 "eval_batch_size=32",
                 "trainer=BasicTrainer",
                 "sample_during_eval=false",
