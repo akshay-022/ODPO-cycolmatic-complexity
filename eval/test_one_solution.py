@@ -216,6 +216,7 @@ def eval_and_save_problems(args):
             os.makedirs(args.save)
 
         res = []
+        failures = []
         for o_idx, o in enumerate(output_str):
             if args.debug:
                 print(f"\nTesting solution {o_idx}")
@@ -223,7 +224,8 @@ def eval_and_save_problems(args):
             out = extract_substring(o)
             if out is None:
                 print("No python code found for ", o)
-                raise ValueError
+                failures.append(o)
+                continue
             try:
                 curr_res = check_correctness(
                     prob_path=prob_path,
