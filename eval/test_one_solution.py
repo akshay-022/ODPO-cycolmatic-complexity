@@ -15,8 +15,9 @@ from types import SimpleNamespace
 from typing import Dict
 
 import numpy as np
-import testing_util as test_util
 from tqdm import tqdm
+
+import testing_util as test_util
 
 EXAMPLE_RESULTS = {
     "0": [[-2]],
@@ -204,6 +205,7 @@ def eval_and_save_problems(args):
             if args.debug:
                 print(f"\n\nproblem path = {problem}")
             output_str = gpt_codes[str(index + args.start)]
+            output_str = output_str[0]  # Just select the first output
         except:
             print("CANNOT FIND OUTPUT_STR FOR", problem)
             continue
