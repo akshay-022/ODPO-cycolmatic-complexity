@@ -15,8 +15,9 @@ from types import SimpleNamespace
 from typing import Dict
 
 import numpy as np
-import testing_util as test_util
 from tqdm import tqdm
+
+import testing_util as test_util
 
 EXAMPLE_RESULTS = {
     "0": [[-2]],
@@ -227,7 +228,8 @@ def eval_and_save_problems(args):
             out = extract_substring(o)
             if out is None:
                 print("No python code found for ", o)
-                failures.append(o)
+                res.append(curr_res)
+                failures.append((index, o))
                 continue
             try:
                 curr_res = check_correctness(
@@ -270,6 +272,7 @@ def eval_and_save_problems(args):
                 pdb.set_trace()
                 print("didn't save problem due to {e}")
 
+        print(f"Total Failures : {len(failures)}")
     return results
 
 
