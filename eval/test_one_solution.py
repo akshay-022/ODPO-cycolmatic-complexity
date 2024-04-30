@@ -200,6 +200,7 @@ def eval_and_save_problems(args):
         problems = problems[: args.stop_early]
 
     # main eval loop
+    failures = []
     for index, problem in enumerate(tqdm(problems)):
         try:
             if args.debug:
@@ -217,7 +218,6 @@ def eval_and_save_problems(args):
             os.makedirs(args.save)
 
         res = []
-        failures = []
         for o_idx, o in enumerate(output_str):
             if o_idx == 1:
                 # SKIP the second output, just use first to run test on
