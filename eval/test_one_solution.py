@@ -8,7 +8,6 @@ import multiprocessing
 import os
 import pprint
 import re
-
 # for timing debugging
 from datetime import date, datetime
 from types import SimpleNamespace
@@ -219,9 +218,6 @@ def eval_and_save_problems(args):
 
         res = []
         for o_idx, o in enumerate(output_str):
-            if o_idx == 1:
-                # SKIP the second output, just use first to run test on
-                continue
             if args.debug:
                 print(f"\nTesting solution {o_idx}")
             curr_res = [-2]
