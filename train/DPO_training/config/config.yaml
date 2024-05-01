@@ -77,7 +77,8 @@ n_eval_examples: 0
 trainer: BasicTrainer
 
 # The optimizer to use; we use RMSprop because it works about as well as Adam and is more memory-efficient
-optimizer: RMSprop
+# optimizer: RMSprop
+optimizer: Adam
 
 # number of linear warmup steps for the learning rate
 warmup_steps: 150
