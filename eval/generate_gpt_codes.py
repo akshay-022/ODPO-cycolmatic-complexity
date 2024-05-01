@@ -117,9 +117,9 @@ def main(args):
     if not os.path.exists(args.save):
         os.makedirs(args.save, exist_ok=True)
     if not args.end:
-        codes_loc = os.path.join(args.save, f"all_codes.json")
+        codes_loc = os.path.join(args.save, f"all_codes_second.json")
     else:
-        codes_loc = os.path.join(args.save, f"{args.start}-{args.end}_codes.json")
+        codes_loc = os.path.join(args.save, f"{args.start}-{args.end}_codes_second.json")
 
     # Only do the problems that are specified.
     if args.index:
@@ -140,13 +140,13 @@ def main(args):
 
     # Set up model
     print("Loading model...")
-    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-1.3b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-1.3b-instruct", trust_remote_code=True, torch_dtype=torch.float16)
     model.cuda()
     print(f"Loaded {args.load}.")
 
     # main eval loop
     for index, problem in enumerate(tqdm(problems)):
-        if index >= 1786:
+        if index >= 2136:
             prob_path = os.path.join(args.root, problem)
             print(prob_path)
             if args.debug:
