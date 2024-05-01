@@ -210,8 +210,13 @@ def eval_and_save_problems(args):
             continue
         prob_path = os.path.join(args.root, problem)
 
-        with open(os.path.join(prob_path, "solutions.json"), "r") as f:
-            sols = json.load(f)
+        try:
+            with open(os.path.join(prob_path, "solutions.json"), "r") as f:
+                sols = json.load(f)
+        except Exception as e:
+            failures.append((index,))
+            print("Exception due to no json", e)
+            continue
 
         if not os.path.exists(args.save):
             os.makedirs(args.save)
