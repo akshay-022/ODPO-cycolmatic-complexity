@@ -38,4 +38,4 @@ The evaluation instructions are specified in [eval/README](eval/README.md).
 
 Run this command for O-DPO : 
 
-python -u train.py model=deepseek datasets=[apps] loss=dpo loss.beta=0.1 exp_name=test_dpo_deepseek gradient_accumulation_steps=2 batch_size=64 eval_batch_size=32 trainer=BasicTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16
+python -u train.py model=deepseek datasets=[apps] loss=dpo loss.beta=0.1 exp_name=test_dpo_deepseek gradient_accumulation_steps=2 batch_size=2 eval_batch_size=2 trainer=BasicTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16
