@@ -172,7 +172,7 @@ class BasicTrainer(object):
             sft_mode=config.loss.name == 'sft',
         )
 
-        self.policy = policy.half()
+        self.policy = policy #.half()
         self.reference_model = reference_model
 
         self.train_iterator = get_batch_iterator(**data_iterator_kwargs, split='train', n_epochs=config.n_epochs, n_examples=config.n_examples, batch_size=config.batch_size, silent=rank != 0, cache_dir=get_local_dir(config.local_dirs))
@@ -215,7 +215,7 @@ class BasicTrainer(object):
            We do this to avoid doing two forward passes, because it's faster for FSDP.
         """
         concatenated_batch = concatenated_inputs(batch)
-        all_logits = model(concatenated_batch['concatenated_input_ids'], attention_mask=concatenated_batch['concatenated_attention_mask']).logits.to(torch.float16)
+        all_logits = model(concatenated_batch['concatenated_input_ids'], attention_mask=concatenated_batch['concatenated_attention_mask']).logits.to(torch.float32)
         all_logps = _get_batch_logps(all_logits, concatenated_batch['concatenated_labels'], average_log_prob=False)
         chosen_logps = all_logps[:batch['chosen_input_ids'].shape[0]]
         rejected_logps = all_logps[batch['chosen_input_ids'].shape[0]:]
