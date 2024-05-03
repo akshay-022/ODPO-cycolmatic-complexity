@@ -108,9 +108,10 @@ def main(args):
 
     # Convert the data into the desired format
     formatted_data = {}
+    alpha_beta = "0.5_0.5"
 
     # Load the JSON data from output_dpo.json
-    with open('important_jsons/dpo_0.5_0.5.json', 'r') as f:
+    with open('important_jsons/dpo_'+alpha_beta+'.json', 'r') as f:
         data_odpo = json.load(f)
     with open('important_jsons/deepseek_samples.json', 'r') as f:
         data_prompts = json.load(f)
@@ -125,7 +126,7 @@ def main(args):
     gpt_codes = {}
     if not os.path.exists(args.save):
         os.makedirs(args.save, exist_ok=True)
-    codes_loc = "important_jsons/odpo_alg_inputs.json"
+    codes_loc = "important_jsons/odpo_alg_inputs_"+alpha_beta+".json"
     # Only do the problems that are specified.
     if args.index:
         problems = [problems[args.index]]
@@ -151,7 +152,7 @@ def main(args):
 
     # main eval loop
     for index, problem in enumerate(tqdm(problems)):
-        if str(index) in data_odpo and int(index)<1787:
+        if str(index) in data_odpo:
             prob_path = os.path.join(args.root, problem)
             print(prob_path)
             if args.debug:
@@ -189,7 +190,7 @@ def main(args):
             }
 
     with open(codes_loc, "w") as f:
-        json.dump(formatted_data, f)
+        json.dump(formatted_data, f, indent=4)
 
 
 if __name__ == "__main__":

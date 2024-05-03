@@ -7,3 +7,4 @@ __pycache__/
 outputs/*
 DPO_training/__pycache__/*
 .cache
+/train/DPO_training/outputs

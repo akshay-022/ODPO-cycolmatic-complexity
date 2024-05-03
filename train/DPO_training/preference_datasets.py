@@ -194,11 +194,12 @@ def get_apps(split: str, silent: bool = False, cache_dir: str = None) -> Dict[st
     """
     print(f'Loading APPS dataset...')
     #This is the actual thing: 
+    file_name = "odpo_alg_inputs_0.5_0.5.json"
     try:
-        with open("odpo_alg_inputs.json", 'r') as f:
+        with open(file_name, 'r') as f:
             data = json.load(f)
     except: 
-        with open("train/DPO_training/odpo_alg_inputs.json", 'r') as f:
+        with open("../../eval/important_jsons/" + file_name, 'r') as f:
             data = json.load(f)
     #data = {'Sample debugging': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 1.0},'Sample debugging1': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 2.0},'Sample debugging2': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 3.0}, 'Sample debugging3': {'responses': ["I can't help with that", "Paris is the capital of France"], 'pairs': [(0, 1)], 'sft_target': "I can't help with that", 'value': 4.0}}
     return data
