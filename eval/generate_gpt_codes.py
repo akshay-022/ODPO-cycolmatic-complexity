@@ -117,9 +117,9 @@ def main(args):
     if not os.path.exists(args.save):
         os.makedirs(args.save, exist_ok=True)
     if not args.end:
-        codes_loc = os.path.join(args.save, f"all_codes_second.json")
+        codes_loc = os.path.join(args.save, f"all_codes_training_5000.json")
     else:
-        codes_loc = os.path.join(args.save, f"{args.start}-{args.end}_codes_second.json")
+        codes_loc = os.path.join(args.save, f"{args.start}-{args.end}_codes_training_5000.json")
 
     # Only do the problems that are specified.
     if args.index:
@@ -146,70 +146,69 @@ def main(args):
 
     # main eval loop
     for index, problem in enumerate(tqdm(problems)):
-        if index >= 2136:
-            prob_path = os.path.join(args.root, problem)
-            print(prob_path)
-            if args.debug:
-                print(f"problem path = {prob_path}")
+        prob_path = os.path.join(args.root, problem)
+        print(prob_path)
+        if args.debug:
+            print(f"problem path = {prob_path}")
 
-            test_case_path = os.path.join(prob_path, "input_output.json")
-            prompt_path = os.path.join(prob_path, "question.txt")
-            starter_path = os.path.join(prob_path, "starter_code.py")
-            solutions_path = os.path.join(prob_path, "solutions.json")
-            if not os.path.exists(starter_path):
-                    starter_path = None
-            if not os.path.exists(test_case_path) or not os.path.exists(prompt_path):
-                print(os.path.exists(test_case_path))
-                print(os.path.exists(prompt_path))
-                continue
+        test_case_path = os.path.join(prob_path, "input_output.json")
+        prompt_path = os.path.join(prob_path, "question.txt")
+        starter_path = os.path.join(prob_path, "starter_code.py")
+        solutions_path = os.path.join(prob_path, "solutions.json")
+        if not os.path.exists(starter_path):
+                starter_path = None
+        if not os.path.exists(test_case_path) or not os.path.exists(prompt_path):
+            print(os.path.exists(test_case_path))
+            print(os.path.exists(prompt_path))
+            continue
 
-            # Read the question in
-            prompt_text, sample_sol = generate_prompt(args, test_case_path, prompt_path, solutions_path, tokenizer, starter_path)
-            if args.debug:
-                print("PROMPT_TEXT:")
-                print(prompt_text)
-            start = time.time()
-            output_str = ["",""]
-            messages=[{ 'role': 'user', 'content': prompt_text}]
+        # Read the question in
+        prompt_text, sample_sol = generate_prompt(args, test_case_path, prompt_path, solutions_path, tokenizer, starter_path)
+        if args.debug:
+            print("PROMPT_TEXT:")
             print(prompt_text)
-            for sample_number in range(2):
-                # Feed this into the model.
-                try:
-                    inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
-                    outputs = model.generate(inputs, max_new_tokens=512, do_sample=True, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
-                    output_str[sample_number] = tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True)
-                    print(output_str[sample_number])
-                except Exception as e:
-                    if isinstance(e, UnboundLocalError) and str(e) == "local variable 'next_tokens' referenced before assignment":
-                        # See https://github.com/huggingface/transformers/issues/5118
-                        if args.debug:
-                            print("Problem text was > 1024 tokens, so cannot do generation")
-                            print(e)
-                    else:
-                        print("Unexpected exception in generating solution")
+        start = time.time()
+        output_str = ["",""]
+        messages=[{ 'role': 'user', 'content': prompt_text}]
+        print(prompt_text)
+        for sample_number in range(2):
+            # Feed this into the model.
+            try:
+                inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
+                outputs = model.generate(inputs, max_new_tokens=512, do_sample=True, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+                output_str[sample_number] = tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True)
+                print(output_str[sample_number])
+            except Exception as e:
+                if isinstance(e, UnboundLocalError) and str(e) == "local variable 'next_tokens' referenced before assignment":
+                    # See https://github.com/huggingface/transformers/issues/5118
+                    if args.debug:
+                        print("Problem text was > 1024 tokens, so cannot do generation")
                         print(e)
-                    # Default to empty string on errors
-                    output_str[sample_number] = ""
-                    
+                else:
+                    print("Unexpected exception in generating solution")
+                    print(e)
+                # Default to empty string on errors
+                output_str[sample_number] = ""
+                
 
-                    if args.peeking == 1.0:
-                        output_str[sample_number] = sample_sol
-                    elif len(output_str[sample_number]):
-                        output_str[sample_number] = output_str[sample_number].split("ANSWER:\n")[1].replace("<|endoftext|>", "")
+                if args.peeking == 1.0:
+                    output_str[sample_number] = sample_sol
+                elif len(output_str[sample_number]):
+                    output_str[sample_number] = output_str[sample_number].split("ANSWER:\n")[1].replace("<|endoftext|>", "")
 
-            end = time.time()
+        end = time.time()
 
-            # Save the generated sol
-            gpt_codes[index+args.start] = output_str
+        # Save the generated sol
+        gpt_codes[index+args.start] = output_str
 
-            if args.debug:
-                print(f"Generation time: {end - start}")
-                print(f"Generated output string:")
-                print(output_str)
-                print("------------------------------------------------------------")
+        if args.debug:
+            print(f"Generation time: {end - start}")
+            print(f"Generated output string:")
+            print(output_str)
+            print("------------------------------------------------------------")
 
-            with open(codes_loc, "w") as f:
-                json.dump(gpt_codes, f)
+        with open(codes_loc, "w") as f:
+            json.dump(gpt_codes, f)
 
 
 if __name__ == "__main__":
@@ -217,7 +216,7 @@ if __name__ == "__main__":
     parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     parser = argparse.ArgumentParser(description="Run a tranined model to generate Python code.")
     parser.add_argument("--arch", default="gpt2", choices=transformers.GPT2_PRETRAINED_MODEL_ARCHIVE_LIST)
-    parser.add_argument("-t","--test_loc", default=os.path.join(parent_dir, 'train', 'test.json'), type=str)
+    parser.add_argument("-t","--test_loc", default=os.path.join(parent_dir, 'train', 'train.json'), type=str)
     parser.add_argument("-r","--root", default="../", type=str, help="where the data is stored.")
     parser.add_argument("-l","--load", default="~/apps/models/checkpoints/final", type=str)
     parser.add_argument("--peeking", default=0.0, type=float)
