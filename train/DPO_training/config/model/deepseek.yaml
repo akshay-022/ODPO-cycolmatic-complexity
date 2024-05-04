@@ -3,6 +3,6 @@ tokenizer_name_or_path: "deepseek-ai/deepseek-coder-1.3b-instruct"
 archive: null
 block_name: LlamaDecoderLayer
 
-policy_dtype: float32
+policy_dtype: float16
 fsdp_policy_mp: null
 reference_dtype: float16
