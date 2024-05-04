@@ -42,4 +42,4 @@ python -u train.py model=deepseek datasets=[apps] loss=dpo loss.beta=0.1 exp_nam
 
 
 
-python -u train.py model=deepseek datasets=[apps] loss=dpo loss.beta=0.1 exp_name=dpo_0.5_0.5_60_5e11 gradient_accumulation_steps=2 batch_size=2 eval_batch_size=2 trainer=BasicTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16
+python -u train.py model=deepseek datasets=[apps] loss=dpo loss.beta=0.1 exp_name=dpo_0.5_0.5_5e7_bs6_LoRa gradient_accumulation_steps=2 batch_size=6 eval_batch_size=2 trainer=BasicTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16
