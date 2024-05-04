@@ -171,6 +171,7 @@ class BasicTrainer(object):
         reference_model: Optional[nn.Module] = None,
         rank: int = 0,
         world_size: int = 1,
+        peft_config: Optional[dict] = None,  # Added peft_config parameter
     ):
         """A trainer for a language model, supporting either SFT or DPO training.
 
@@ -182,6 +183,7 @@ class BasicTrainer(object):
         self.world_size = world_size
         self.config = config
         self.run_dir = run_dir
+        self.peft_config = peft_config  # Store the peft_config
 
         tokenizer_name_or_path = (
             config.model.tokenizer_name_or_path or config.model.name_or_path
