@@ -72,7 +72,7 @@ def preference_loss(
 
     logits = pi_logratios - ref_logratios  # also known as h_{\pi_\theta}^{y_w,y_l}
 
-    logits = logits  # - torch.log(offset)/beta
+    logits = logits - torch.log(offset)/beta
 
     if ipo:
         losses = (
