@@ -145,7 +145,7 @@ def check_correctness(prob_path, generation, timeout, debug):
 
 def extract_substring(text):
     # Define the regular expression pattern to match the substring inside triple quotes
-    pattern = r"```python\n(.*?)```"
+    pattern = r"```python([\s\S]+?)```"
 
     # Use re.search() to find the first occurrence of the pattern
     match = re.search(pattern, text, re.DOTALL)
@@ -229,6 +229,7 @@ def eval_and_save_problems(args):
                 print(f"\nTesting solution {o_idx}")
             curr_res = [-2]
             out = extract_substring(o)
+            print(out)
             if out is None:
                 print(f"No python code found for problem {index}, response {o_idx}")
                 res.append([-5])
