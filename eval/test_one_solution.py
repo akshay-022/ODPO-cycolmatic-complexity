@@ -8,15 +8,16 @@ import multiprocessing
 import os
 import pprint
 import re
+from collections import defaultdict
+
 # for timing debugging
 from datetime import date, datetime
 from types import SimpleNamespace
 from typing import Dict
 
 import numpy as np
-from tqdm import tqdm
-
 import testing_util as test_util
+from tqdm import tqdm
 
 EXAMPLE_RESULTS = {
     "0": [[-2]],
@@ -199,7 +200,8 @@ def eval_and_save_problems(args):
         problems = problems[: args.stop_early]
 
     # main eval loop
-    failures = []
+    failures = defaultdict(int)
+    skips = []
     for index, problem in enumerate(tqdm(problems)):
         try:
             if args.debug:
@@ -214,8 +216,8 @@ def eval_and_save_problems(args):
             with open(os.path.join(prob_path, "solutions.json"), "r") as f:
                 sols = json.load(f)
         except Exception as e:
-            failures.append((index,))
-            print("Exception due to no json", e)
+            skips.append(index)
+            print(f"Exception due to no solution json for the problem {index}", e)
             continue
 
         if not os.path.exists(args.save):
@@ -229,8 +231,8 @@ def eval_and_save_problems(args):
             out = extract_substring(o)
             if out is None:
                 print("No python code found for ", o)
-                res.append(curr_res)
-                failures.append((index, o))
+                res.append([-5])
+                failures[index] += 1
                 continue
             try:
                 curr_res = check_correctness(
@@ -273,7 +275,11 @@ def eval_and_save_problems(args):
                 pdb.set_trace()
                 print("didn't save problem due to {e}")
 
-        print(f"Total Failures : {len(failures)}")
+    print("*" * 20)
+    print()
+    print(failures)
+    print(f"Total Failures : {len(failures)}")
+    print(f"Total skips : {len(skips)}")
     return results
 
 
