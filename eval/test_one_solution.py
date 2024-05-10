@@ -230,7 +230,7 @@ def eval_and_save_problems(args):
             curr_res = [-2]
             out = extract_substring(o)
             if out is None:
-                print("No python code found for ", o)
+                print(f"No python code found for problem {index}, response {o_idx}")
                 res.append([-5])
                 failures[index] += 1
                 continue
